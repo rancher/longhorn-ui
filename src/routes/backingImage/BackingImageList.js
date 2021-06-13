@@ -3,8 +3,10 @@ import PropTypes from 'prop-types'
 import { Table, Button } from 'antd'
 import BackingImageActions from './BackingImageActions'
 import { formatMib } from '../../utils/formater'
+// eslint-disable-next-line import/no-unresolved
+import Worker from 'workers/hash.worker'
 
-function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail }) {
+function list({ loading, uploadDisabled, dataSource, deleteBackingImage, showDiskStateMapDetail, generateChunkHash, createFileChunk, uploadChunk }) {
   const backingImageActionsProps = {
     deleteBackingImage,
   }
@@ -75,8 +77,34 @@ function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail 
       key: 'operation',
       width: 120,
       render: (text, record) => {
+        let hideUpload = false
+        if (record.diskStateMap) {
+          hideUpload = Object.keys(record.diskStateMap).some((key) => {
+            return record.diskStateMap[key] === 'ready'
+          })
+        }
+        const uploadProps = {
+          beforeUpload: (file) => {
+            let chunkfileList = createFileChunk(file)
+            let totalSize = file.size
+
+            let worker = new Worker()
+            generateChunkHash(chunkfileList, worker, record, totalSize)
+            worker.onmessage = (e) => {
+              uploadChunk(e.data, chunkfileList, record, totalSize)
+              if (e.data.done) {
+                worker.terminate()
+              }
+            }
+            return false
+          },
+          showUploadList: false,
+          uploadDisabled: !!record.imageURL || uploadDisabled || !record.actions.chunkUpload,
+          hideUpload,
+        }
+
         return (
-          <BackingImageActions {...backingImageActionsProps} selected={record} />
+          <BackingImageActions {...backingImageActionsProps} selected={record} uploadProps={uploadProps} />
         )
       },
     },
@@ -101,9 +129,13 @@ function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail 
 
 list.propTypes = {
   loading: PropTypes.bool,
+  uploadDisabled: PropTypes.bool,
   dataSource: PropTypes.array,
   deleteBackingImage: PropTypes.func,
   showDiskStateMapDetail: PropTypes.func,
+  generateChunkHash: PropTypes.func,
+  createFileChunk: PropTypes.func,
+  uploadChunk: PropTypes.func,
 }
 
 export default list

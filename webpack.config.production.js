@@ -24,7 +24,8 @@ module.exports = {
     filename: "[name].[chunkhash:8].js",
     path: path.resolve(__dirname, "dist"),
     publicPath: "./",
-    chunkFilename: "[name].[chunkhash:8].async.js"
+    chunkFilename: "[name].[chunkhash:8].async.js",
+    globalObject: 'this',
   },
   resolve: {
     alias: {
@@ -33,7 +34,8 @@ module.exports = {
       utils: path.resolve(__dirname, "src/utils/"),
       services: path.resolve(__dirname, "src/services/"),
       routes: path.resolve(__dirname, "src/routes/"),
-      models: path.resolve(__dirname, "src/models/")
+      models: path.resolve(__dirname, "src/models/"),
+      workers: path.resolve(__dirname, "scripts/workers/")
     }
   },
   module: {
@@ -112,7 +114,18 @@ module.exports = {
             }
           }
         ]
-      }
+      },
+      {
+        test: /\.worker\.js$/,
+        use: [
+          {
+            loader: "worker-loader",
+            options: {
+              inline: 'fallback'
+            }
+          },
+        ],
+      },
     ]
   },
   stats: {

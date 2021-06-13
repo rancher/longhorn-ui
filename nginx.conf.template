@@ -30,6 +30,7 @@ http {
 
         location /v1  {
             proxy_pass ${LONGHORN_MANAGER_IP};
+            client_max_body_size 100M;
         }
 
         location / {

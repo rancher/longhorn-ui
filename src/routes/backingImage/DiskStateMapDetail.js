@@ -50,8 +50,8 @@ const modal = ({
     return {
       status: currentData.diskStateMap[key],
       disk: key,
-      downloading: currentData.diskStateMap[key] && currentData.downloadProgressMap && currentData.downloadProgressMap[key] !== 'undefined' && currentData.diskStateMap[key] === 'downloading',
-      progress: currentData.downloadProgressMap && currentData.downloadProgressMap[key] ? parseInt(currentData.downloadProgressMap[key], 10) : 0,
+      downloading: currentData.diskStateMap[key] && currentData.diskFileHandlingProgressMap && currentData.diskFileHandlingProgressMap[key] !== 'undefined' && currentData.diskStateMap[key] === 'in_progress',
+      progress: currentData.diskFileHandlingProgressMap && currentData.diskFileHandlingProgressMap[key] ? parseInt(currentData.diskFileHandlingProgressMap[key], 10) : 0,
     }
   }) : []
 

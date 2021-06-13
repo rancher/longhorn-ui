@@ -1,7 +1,13 @@
-import { create, deleteBackingImage, query, deleteDisksOnBackingImage } from '../services/backingImage'
+import { create, deleteBackingImage, query, deleteDisksOnBackingImage, prepareChunk, uploadChunk, coalesceChunk, closeUploadServer, uploadServerStart } from '../services/backingImage'
 import { parse } from 'qs'
 import { wsChanges, updateState } from '../utils/websocket'
 import queryString from 'query-string'
+import { delay } from 'dva/saga'
+import { message } from 'antd'
+message.config({
+  top: 60,
+  duration: 5,
+})
 
 export default {
   ws: null,
@@ -44,10 +50,14 @@ export default {
     },
     *create({
       payload,
+      callback,
     }, { call, put }) {
       yield put({ type: 'hideCreateBackingImageModal' })
-      yield call(create, payload)
+      let resp = yield call(create, payload)
       yield put({ type: 'query' })
+      if (resp && resp.status === 200 && resp.message === 'OK') {
+        if (callback) callback(resp)
+      }
     },
     *delete({
       payload,
@@ -92,6 +102,65 @@ export default {
       if (ws) {
         ws.close(1000)
       }
+    },
+    *upload({
+      payload,
+      callback,
+    }, { call, put }) {
+      let total = 0
+      let chunkList = payload.prepareChunkList
+      let actions = payload.backingImage && payload.backingImage.actions
+      if (actions) {
+        for (let i = 0; i < chunkList.length; i++) {
+          let params = {
+            size: chunkList[i].size,
+            checksum: chunkList[i].checksum,
+            index: chunkList[i].index,
+          }
+          let resp = yield call(prepareChunk, actions.chunkPrepare, params)
+          total += params.size
+          if (resp && !resp.exists) {
+            // eslint-disable-next-line no-undef
+            const formData = new FormData()
+
+            formData.append('chunk', chunkList[i].data)
+            formData.append('size', chunkList[i].size)
+            formData.append('index', chunkList[i].index)
+            formData.append('checksum', chunkList[i].checksum)
+
+            yield call(uploadChunk, actions.chunkUpload, formData, {}, payload.onProgress, i)
+          }
+          yield put(
+            { type: 'app/backingImageUploadProgress',
+              payload: {
+                backingImageUploadSize: total,
+                backingImageuploadPercent: parseInt((total / payload.totalSize) * 100, 10),
+              },
+            }
+          )
+        }
+        yield call(coalesceChunk, actions.chunkCoalesce, {
+          size: total,
+          count: chunkList.length,
+        })
+        yield call(closeUploadServer, actions.uploadServerClose)
+        if (callback) callback()
+      }
+    },
+    *uploadServerStart({
+      payload,
+      callback,
+    }, { call }) {
+      let resp = null
+      for (let i = 0; i < 6; i++) {
+        yield delay(3000)
+        resp = yield call(uploadServerStart, payload.url, { size: payload.size })
+        if (resp && resp.status === 200) break
+        if (i === 5) {
+          message.error('Please try to upload the file again')
+        }
+      }
+      if (callback) callback(resp)
     },
   },
   reducers: {
