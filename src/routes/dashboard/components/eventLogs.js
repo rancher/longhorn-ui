@@ -152,7 +152,7 @@ class EventLogs extends React.Component {
         dataIndex: 'nameText',
         key: 'nameText',
         className: 'name',
-        filterIcon: <Icon type="filter" style={{ color: this.state.searchField === 'nameText' && this.state.searchText ? '#108ee9' : '#aaa' }} />,
+        filterIcon: <Icon type="filter" style={{ color: this.state.searchField === 'nameText' && this.state.searchText ? '#862493' : '#aaa' }} />,
         filterDropdown: (
           <div className="filter-dropdown">
             <Input
@@ -233,7 +233,7 @@ class EventLogs extends React.Component {
         key: 'sourceText',
         className: 'text',
         sorter: (a, b) => sortTable(a, b, 'sourceText'),
-        filterIcon: <Icon type="filter" style={{ color: this.state.searchField === 'sourceText' && this.state.searchText ? '#108ee9' : '#aaa' }} />,
+        filterIcon: <Icon type="filter" style={{ color: this.state.searchField === 'sourceText' && this.state.searchText ? '#862493' : '#aaa' }} />,
         filterDropdown: (
           <div className="filter-dropdown">
             <Input

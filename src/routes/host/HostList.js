@@ -264,7 +264,7 @@ class List extends React.Component {
         render: (text, record) => {
           return (
             <div style={{ textAlign: 'center' }}>
-              <div>{text} {record && (record.region || record.zone) ? <Tooltip title={<span> region: {record.region} <br></br> zone: {record.zone} </span>}><Icon style={{ marginLeft: '5px', color: '#108ee9' }} type="environment" /></Tooltip> : '' } </div>
+              <div>{text} {record && (record.region || record.zone) ? <Tooltip title={<span> region: {record.region} <br></br> zone: {record.zone} </span>}><Icon style={{ marginLeft: '5px', color: '#862493' }} type="environment" /></Tooltip> : '' } </div>
               <div className={styles.secondLabel} style={{ color: '#b9b9b9' }}>{record.address}</div>
             </div>
           )

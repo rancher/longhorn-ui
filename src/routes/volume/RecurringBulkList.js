@@ -418,7 +418,7 @@ class RecurringList extends React.Component {
           return (
             <Tooltip placement="top" title={!this.state.editing ? '' : 'Click edit Cron'}>
               <span
-                style={{ maxWidth: '500px', display: 'inline-block', color: !this.state.editing ? '#666' : '#108ee9', cursor: !this.state.editing ? 'auto' : 'pointer' }}
+                style={{ maxWidth: '500px', display: 'inline-block', color: !this.state.editing ? '#666' : '#862493', cursor: !this.state.editing ? 'auto' : 'pointer' }}
                 onClick={() => {
                   if (!this.state.editing) {
                     return
@@ -439,7 +439,7 @@ class RecurringList extends React.Component {
           return (
             <Tooltip placement="top" title={!this.state.editing || record.task !== 'backup' ? '' : 'Click add labels'}>
               <div
-                style={{ display: 'flex', justifyContent: 'center', minWidth: '200px', width: '100%', color: !this.state.editing || record.task !== 'backup' ? '#666' : '#108ee9', cursor: !this.state.editing || record.task !== 'backup' ? 'auto' : 'pointer' }}
+                style={{ display: 'flex', justifyContent: 'center', minWidth: '200px', width: '100%', color: !this.state.editing || record.task !== 'backup' ? '#666' : '#862493', cursor: !this.state.editing || record.task !== 'backup' ? 'auto' : 'pointer' }}
                 onClick={() => {
                   if (!this.state.editing || record.task !== 'backup') {
                     return

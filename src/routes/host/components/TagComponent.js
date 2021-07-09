@@ -49,7 +49,7 @@ class DistTag extends React.Component {
         {tags.map((tag) => {
           const isLongTag = tag.length > 20
           const tagElem = (
-            <Tag color={this.props.nodeBoolean ? 'rgb(39, 174, 95)' : '#108eb9'} key={tag} closable onClose={() => this.handleClose(tag)}>
+            <Tag color={this.props.nodeBoolean ? 'rgb(39, 174, 95)' : '#862493'} key={tag} closable onClose={() => this.handleClose(tag)}>
               {isLongTag ? `${tag.slice(0, 20)}...` : tag}
             </Tag>
           )

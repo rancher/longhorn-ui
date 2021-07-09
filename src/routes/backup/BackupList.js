@@ -157,7 +157,7 @@ class List extends React.Component {
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {errorMessage ? <Icon type="warning" style={{ marginRight: 10, color: '#f5222d' }} /> : ''}
                 <CopyToClipboard onCopy={this.onCopy} text={text}>
-                  <p style={{ color: '#108ee9', cursor: 'pointer', margin: '0px' }}>{text}</p>
+                  <p style={{ color: '#862493', cursor: 'pointer', margin: '0px' }}>{text}</p>
                 </CopyToClipboard>
               </div>
             </Tooltip>
@@ -294,7 +294,7 @@ class List extends React.Component {
           }
           return (
             <div onClick={() => { showBackupLabels(obj) }}>
-              <Icon style={{ fontSize: '18px', color: obj ? '#108eb9' : '#cccccc', cursor: 'pointer' }} type="tags" />
+              <Icon style={{ fontSize: '18px', color: obj ? '#862493' : '#cccccc', cursor: 'pointer' }} type="tags" />
             </div>
           )
         },

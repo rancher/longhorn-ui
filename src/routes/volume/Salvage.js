@@ -18,7 +18,7 @@ const Replica = ({ item, toggleSelect, selected, hosts }) => {
   const host = hosts.find(h => h.id === item.hostId)
   return (
     <div onClick={() => toggleSelect(item.name)} className={cNames}>
-      <div className={style.header} style={{ backgroundColor: item.running ? '#108eb9' : 'lightgrey', padding: 14 }}>
+      <div className={style.header} style={{ backgroundColor: item.running ? '#862493' : 'lightgrey', padding: 14 }}>
         <div>
           <img
             alt="replica"

@@ -40,7 +40,7 @@ class Replica extends React.Component {
       text: '',
     }
     if (m === 'rw') {
-      out.color = '#108eb9'
+      out.color = '#862493'
       out.text = 'Healthy'
     } else if (m === 'wo') {
       out.color = '#f1c40f'

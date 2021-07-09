@@ -91,7 +91,7 @@ function VolumeInfo({ selectedVolume, snapshotModalState, engineImages, hosts, c
 
   let forMapDisk = (tag, index) => {
     return (
-      <Tag key={index} color="#108eb9">
+      <Tag key={index} color="#862493">
         {tag}
       </Tag>
     )

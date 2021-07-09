@@ -13,7 +13,7 @@ const countUpProps = {
 }
 
 function Resource({ total, used, data }) {
-  const COLORS = ['#00558b', '#108ee9']
+  const COLORS = ['#3D1135', '#862493']
   return (<div className={styles.resource}>
     <ResponsiveContainer minHeight={200}>
       <PieChart>
