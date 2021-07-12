@@ -9,6 +9,7 @@ export default {
   state: {
     data: [],
     selected: {},
+    selectedRows: [],
     createBackingImageModalVisible: false,
     createBackingImageModalKey: Math.random(),
     diskStateMapDetailModalVisible: false,
@@ -41,6 +42,7 @@ export default {
         data.data.sort((a, b) => a.name.localeCompare(b.name))
       }
       yield put({ type: 'queryBackingImage', payload: { ...data } })
+      yield put({ type: 'clearSelection' })
     },
     *create({
       payload,
@@ -53,6 +55,14 @@ export default {
       payload,
     }, { call, put }) {
       yield call(deleteBackingImage, payload)
+      yield put({ type: 'query' })
+    },
+    *bulkDelete({
+      payload,
+    }, { call, put }) {
+      if (payload && payload.length > 0) {
+        yield payload.map(item => call(deleteBackingImage, item))
+      }
       yield put({ type: 'query' })
     },
     *deleteDisksOnBackingImage({
@@ -100,6 +110,12 @@ export default {
         ...state,
         ...action.payload,
       }
+    },
+    changeSelection(state, action) {
+      return { ...state, ...action.payload }
+    },
+    clearSelection(state) {
+      return { ...state, selectedRows: [] }
     },
     updateBackground(state, action) {
       return updateState(state, action)

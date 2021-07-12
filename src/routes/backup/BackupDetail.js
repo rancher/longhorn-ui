@@ -20,7 +20,7 @@ function Backup({ host, backup, volume, setting, backingImage, loading, location
   const backingImages = backingImage.data
   const defaultReplicaCountSetting = settings.find(s => s.id === 'default-replica-count')
   const defaultNumberOfReplicas = defaultReplicaCountSetting !== undefined ? parseInt(defaultReplicaCountSetting.value, 10) : 3
-  const currentBackUp = backupVolumes.filter((item) => { return item.id === queryString.parse(location.search).keyword })
+  const currentBackUp = backupVolumes.find((item) => { return item.id === queryString.parse(location.search).keyword })
   const backupVolumesProps = {
     backup: data,
     volumeList,
@@ -53,6 +53,7 @@ function Backup({ host, backup, volume, setting, backingImage, loading, location
             numberOfReplicas: defaultNumberOfReplicas,
             volumeName: record.volumeName,
             accessMode: currentVolume && currentVolume.accessMode ? currentVolume.accessMode : 'rwo',
+            backingImage: currentBackUp.backingImageName,
           },
         },
       })
@@ -147,6 +148,7 @@ function Backup({ host, backup, volume, setting, backingImage, loading, location
       iops: 1000,
       baseImage,
       fromBackup: lastBackupUrl,
+      backingImage: currentBackUp ? currentBackUp.backingImageName : '',
     },
     nodeTags,
     diskTags,
@@ -195,10 +197,10 @@ function Backup({ host, backup, volume, setting, backingImage, loading, location
       <div style={{ position: 'absolute', top: '-50px', right: '20px', display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
         <DropOption
           menuOptions={[
-            { key: 'recovery', name: 'Create Disaster Recovery Volume', disabled: currentBackUp.length > 0 && !currentBackUp[0].lastBackupName },
+            { key: 'recovery', name: 'Create Disaster Recovery Volume', disabled: currentBackUp && !currentBackUp.lastBackupName },
             { key: 'deleteAll', name: 'Delete All Backups' },
           ]}
-          onMenuClick={e => handleMenuClick(currentBackUp[0], e)}
+          onMenuClick={e => handleMenuClick(currentBackUp, e)}
         />
       </div>
       <BackupList {...backupVolumesProps} />

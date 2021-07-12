@@ -111,7 +111,7 @@ const modal = ({
         </FormItem>
         <FormItem label="Backing Image" hasFeedback {...formItemLayout}>
           {getFieldDecorator('backingImage', {
-            initialValue: '',
+            initialValue: item.backingImage,
           })(<Select allowClear={true}>
             { backingImages.map(backingImage => <Option key={backingImage.name} value={backingImage.name}>{backingImage.name}</Option>) }
           </Select>)}
