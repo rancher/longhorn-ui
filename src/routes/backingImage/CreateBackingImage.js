@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Form, Input } from 'antd'
+import { Form, Input, Select, Upload, Button, Icon } from 'antd'
 import { ModalBlur } from '../../components'
 const FormItem = Form.Item
+const Option = Select.Option
 
 const formItemLayout = {
   labelCol: {
@@ -22,6 +23,7 @@ const modal = ({
     getFieldDecorator,
     validateFields,
     getFieldsValue,
+    setFieldsValue,
   },
 }) => {
   function handleOk() {
@@ -29,8 +31,10 @@ const modal = ({
       if (errors) {
         return
       }
+      const requireUpload = getFieldsValue().requireUpload === 'true'
       const data = {
         ...getFieldsValue(),
+        requireUpload,
       }
       onOk(data)
     })
@@ -43,6 +47,24 @@ const modal = ({
     width: 1040,
     onOk: handleOk,
   }
+
+  const selectChange = (value) => {
+    if (value === 'false') {
+      setFieldsValue({
+        imageURL: '',
+      })
+    } else {
+      setFieldsValue({
+        fileContainer: null,
+      })
+    }
+  }
+
+  const uploadProps = {
+    showUploadList: false,
+  }
+
+  let disabled = getFieldsValue().requireUpload === 'true'
 
   return (
     <ModalBlur {...modalOpts}>
@@ -58,16 +80,63 @@ const modal = ({
             ],
           })(<Input />)}
         </FormItem>
-        <FormItem label="URL" hasFeedback {...formItemLayout}>
+        <FormItem label="Created From" {...formItemLayout}>
+          {getFieldDecorator('requireUpload', {
+            valuePropName: 'requireUpload',
+            initialValue: 'false',
+            rules: [
+              {
+                required: false,
+              },
+            ],
+          })(<Select defaultValue={'false'} onChange={selectChange}>
+            <Option value={'false'}>Download From URL</Option>
+          </Select>)}
+        </FormItem>
+        <FormItem label="URL" {...formItemLayout} style={{ display: disabled ? 'none' : 'block' }}>
           {getFieldDecorator('imageURL', {
             initialValue: item.imageURL,
             rules: [
               {
-                required: true,
+                required: false,
                 message: 'Please input backing image url',
               },
             ],
-          })(<Input />)}
+          })(<Input disabled={disabled} />)}
+        </FormItem>
+        <FormItem label="File" {...formItemLayout} style={{ display: disabled ? 'block' : 'none' }}>
+          {getFieldDecorator('fileContainer', {
+            valuePropName: 'fileContainer',
+            initialValue: null,
+            rules: [
+              {
+                required: disabled,
+                message: 'Please upload backing image file',
+              },
+              {
+                validator: (rule, value, callback) => {
+                  if (disabled) {
+                    let size = 0
+                    if (value && value.file && value.file.originFileObj) {
+                      size = value.file.originFileObj.size
+                    }
+                    if (size % 512 === 0) {
+                      callback()
+                    } else {
+                      callback('Must be a multiple of 512 bytes')
+                    }
+                  } else {
+                    callback()
+                  }
+                },
+              },
+            ],
+          })(<Upload {...uploadProps}>
+            <Button disabled={!disabled}>
+              <Icon type="upload" /> Upload
+            </Button>
+          </Upload>)}
+          <span style={{ marginLeft: 10 }}>{ getFieldsValue().fileContainer && getFieldsValue().fileContainer.file ? getFieldsValue().fileContainer.file.name : ''}</span>
         </FormItem>
       </Form>
     </ModalBlur>

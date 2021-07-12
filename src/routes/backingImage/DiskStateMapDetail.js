@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Modal, Progress, Tooltip } from 'antd'
+import { Table, Modal, Progress, Tooltip, Card } from 'antd'
 import DiskStateMapActions from './DiskStateMapActions'
 import { ModalBlur, DropOption } from '../../components'
+import style from './BackingImage.less'
 const confirm = Modal.confirm
 
 const modal = ({
@@ -17,11 +18,15 @@ const modal = ({
   diskStateMapDeleteLoading,
 }) => {
   const modalOpts = {
-    title: 'Backing Image state in disks',
+    title: 'Check details & Operate files in disks',
     visible,
     onCancel,
     hasOnCancel: true,
     width: 680,
+    maxHeight: 800,
+    style: {
+      top: 0,
+    },
     okText: 'Close',
     footer: null,
     bodyStyle: { padding: '0px' },
@@ -106,7 +111,32 @@ const modal = ({
 
   return (
     <ModalBlur {...modalOpts}>
-      <div style={{ width: '100%', overflow: 'auto', maxHeight: '500px', padding: '10px 20px 10px' }}>
+      <div style={{ width: '100%', overflow: 'auto', padding: '10px 20px 10px' }}>
+        <div className={style.backingImageModalContainer}>
+          <Card>
+            <div className={style.parametersContainer} style={{ marginBottom: 0 }}>
+              <div>Created From: </div>
+              <span>{currentData.sourceType ? currentData.sourceType.toUpperCase() : currentData.sourceType}</span>
+              <div style={{ textAlign: 'left' }}>Parameters During Creation:</div>
+            </div>
+            <div style={{ width: '90%', marginLeft: 20 }}>
+              {currentData.parameters ? Object.keys(currentData.parameters).map((key) => {
+                return <div style={{ display: 'flex', padding: 5 }} key={key}>
+                  <div style={{ width: 60 }}>{key ? key.toUpperCase() : key }:</div>
+                  <div style={{ marginLeft: 10 }}>{currentData.parameters[key]}</div>
+                </div>
+              }) : ''}
+            </div>
+          </Card>
+          <Card>
+            <div className={style.parametersContainer}>
+              <div style={{ textAlign: 'left' }}>Expected SHA512 Checksum:</div>
+              <span>{currentData.expectedChecksum ? currentData.expectedChecksum : ''}</span>
+              <div style={{ textAlign: 'left' }}>Current SHA512 Checksum:</div>
+              <span>{currentData.currentChecksum ? currentData.currentChecksum : ''}</span>
+            </div>
+          </Card>
+        </div>
         <div style={{ marginBottom: 12 }}>
           <DiskStateMapActions {...diskStateMapProps} />
         </div>

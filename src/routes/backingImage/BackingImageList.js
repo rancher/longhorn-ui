@@ -1,36 +1,36 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Button } from 'antd'
+import { Table, Button, Icon, Tooltip } from 'antd'
 import BackingImageActions from './BackingImageActions'
+import { pagination } from '../../utils/page'
 import { formatMib } from '../../utils/formater'
 
-function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail }) {
+function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail, rowSelection, height }) {
   const backingImageActionsProps = {
     deleteBackingImage,
+  }
+  const state = (record) => {
+    if (record.deletionTimestamp) {
+      // Dleteing
+      return (<Tooltip title={'Deleteing'}><Icon type="sync" style={{ marginLeft: 10, color: '#f5222d' }} spin /></Tooltip>)
+    }
+    if (record.diskStateMap && Object.keys(record.diskStateMap).every((key) => record.diskStateMap[key] === 'failed')) {
+      return (<Tooltip title={'The backingImage is unavailable'}><Icon type="warning" style={{ marginLeft: 10, color: '#f5222d' }} /></Tooltip>)
+    }
+    return ''
   }
 
   const columns = [
     {
-      title: 'State',
-      dataIndex: 'state',
-      key: 'state',
-      width: 100,
-      render: (text, record) => {
-        if (record && record.deletionTimestamp) {
-          return (<div className="degraded capitalize">deleting</div>)
-        } else {
-          return (<div className="healthy capitalize">Healthy</div>)
-        }
-      },
-    }, {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      width: 100,
-      render: (text) => {
+      width: 200,
+      render: (text, record) => {
         return (
           <div>
             {text}
+            {state(record)}
           </div>
         )
       },
@@ -47,10 +47,10 @@ function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail 
         )
       },
     }, {
-      title: 'Image URL',
-      dataIndex: 'imageURL',
-      key: 'imageURL',
-      width: 400,
+      title: 'Created From',
+      dataIndex: 'sourceType',
+      key: 'sourceType',
+      width: 200,
       render: (text) => {
         return (
           <div>
@@ -59,10 +59,10 @@ function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail 
         )
       },
     }, {
-      title: 'Backing Image state in disks',
+      title: 'Check details & Operate files in disks',
       dataIndex: 'diskStateMap',
       key: 'diskStateMap',
-      width: 300,
+      width: 350,
       render: (text, record) => {
         return (
           <div onClick={() => { showDiskStateMapDetail(record) }} style={{ width: '100%', cursor: 'pointer' }}>
@@ -82,18 +82,19 @@ function list({ loading, dataSource, deleteBackingImage, showDiskStateMapDetail 
     },
   ]
 
-  const pagination = false
-
   return (
-    <div>
+    <div id="backingImageTable" style={{ flex: 1, height: '1px', overflow: 'hidden' }}>
       <Table
+        className="backupImage-table-class"
         bordered={false}
         columns={columns}
+        rowSelection={rowSelection}
         dataSource={dataSource}
         loading={loading}
         simple
         pagination={pagination}
         rowKey={record => record.id}
+        scroll={{ x: 970, y: height }}
       />
     </div>
   )
@@ -104,6 +105,8 @@ list.propTypes = {
   dataSource: PropTypes.array,
   deleteBackingImage: PropTypes.func,
   showDiskStateMapDetail: PropTypes.func,
+  rowSelection: PropTypes.object,
+  height: PropTypes.number,
 }
 
 export default list

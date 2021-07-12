@@ -14,7 +14,9 @@ const { confirm, info } = Modal
 
 function Backup({ host, backup, loading, setting, backingImage, dispatch, location }) {
   location.search = location.search ? location.search : ''
-  const { backupVolumes, sorter, restoreBackupFilterKey, currentItem, restoreBackupModalKey, createVolumeStandModalKey, bulkCreateVolumeStandModalKey, createVolumeStandModalVisible, bulkCreateVolumeStandModalVisible, lastBackupUrl, baseImage, size, restoreBackupModalVisible, selectedRows, isBulkRestore, bulkRestoreData, previousChecked, tagsLoading, nodeTags, diskTags, volumeName, backupVolumesForBulkCreate, workloadDetailModalVisible, WorkloadDetailModalKey, workloadDetailModalItem } = backup
+  // currentItem || currentBackupVolume. The currentItem was a wrong decision at the beginning of the design. It was originally to simplify the transfer of attributes without complete assignment.
+  // When backup supports ws, currentItem will be refactored to currentBackupVolume
+  const { backupVolumes, sorter, restoreBackupFilterKey, currentItem, restoreBackupModalKey, createVolumeStandModalKey, bulkCreateVolumeStandModalKey, createVolumeStandModalVisible, bulkCreateVolumeStandModalVisible, lastBackupUrl, baseImage, size, restoreBackupModalVisible, selectedRows, isBulkRestore, bulkRestoreData, previousChecked, tagsLoading, nodeTags, diskTags, volumeName, backupVolumesForBulkCreate, workloadDetailModalVisible, WorkloadDetailModalKey, workloadDetailModalItem, currentBackupVolume } = backup
   const hosts = host.data
   const settings = setting.data
   const backingImages = backingImage.data
@@ -37,8 +39,8 @@ function Backup({ host, backup, loading, setting, backingImage, dispatch, locati
   }
   const showBackingImageInfo = (record) => {
     let content = record.backingImageName || record.backingImageURL ? (<Descriptions title="" bordered>
-      <Descriptions.Item label="Backing Image Name" span={3}>{record.backingImageName}</Descriptions.Item>
-      <Descriptions.Item label="Backing Image URL" span={3}>{record.backingImageURL}</Descriptions.Item>
+      <Descriptions.Item label={<div style={{ width: '150px' }}>Backing Image Name</div>} span={3}><div style={{ width: '280px' }}>{record.backingImageName}</div></Descriptions.Item>
+      <Descriptions.Item label={<div style={{ width: '150px' }}>Backing Image Checksum</div>} span={3}><div style={{ width: '280px' }}>{record.backingImageChecksum}</div></Descriptions.Item>
     </Descriptions>) : (<div style={{ textAlign: 'center' }}>No Data</div>)
     info({
       title: 'Backing Image Info',
@@ -81,6 +83,7 @@ function Backup({ host, backup, loading, setting, backingImage, dispatch, locati
           url: record.actions.backupList,
           lastBackupName: record.lastBackupName,
           numberOfReplicas: defaultNumberOfReplicas,
+          backingImage: record.backingImageName,
         },
       })
     },
@@ -207,6 +210,7 @@ function Backup({ host, backup, loading, setting, backingImage, dispatch, locati
       baseImage,
       fromBackup: lastBackupUrl,
       name: volumeName,
+      backingImage: currentBackupVolume ? currentBackupVolume.backingImageName : '',
     },
     visible: createVolumeStandModalVisible,
     nodeTags,
