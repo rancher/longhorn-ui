@@ -1,0 +1,22 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+  - cron:  "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: repo-sync
+      uses: rancher/gh-issue-mgr/github-sync@main
+      with:
+        source_repo: "https://github.com/longhorn/longhorn-ui.git"
+        source_branch: "*"
+        destination_branch: "*"
+        sync_tags: "true"
+        github_token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
